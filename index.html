@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DECK — 导航</title>
+  <meta name="description" content="个人导航站 · AI 工具与常用链接" />
+
+  <!-- 字体:Chakra Petch(标题) + JetBrains Mono(正文等宽) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 背景氛围层 -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-scan" aria-hidden="true"></div>
+
+  <div class="shell">
+    <!-- 顶部 -->
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-bracket">[</span>
+        <span class="brand-mark" id="brand">DECK</span>
+        <span class="brand-bracket">]</span>
+        <div class="brand-meta">
+          <span class="brand-owner" id="owner"></span>
+          <span class="brand-tagline" id="tagline"></span>
+        </div>
+      </div>
+
+      <div class="search-wrap" id="searchWrap">
+        <span class="search-prompt">&gt;</span>
+        <input
+          id="search"
+          class="search-input"
+          type="text"
+          placeholder="搜索链接,或回车直接搜索…"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="搜索"
+        />
+        <kbd class="search-key" id="searchKey">/</kbd>
+      </div>
+
+      <div class="status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span class="status-label">ONLINE</span>
+        <time id="clock" class="clock">--:--:--</time>
+      </div>
+    </header>
+
+    <!-- 链接网格(由 app.js 渲染) -->
+    <main id="grid" class="grid" aria-live="polite"></main>
+
+    <!-- 搜索无结果 -->
+    <div class="empty" id="empty" hidden>
+      <div class="empty-glyph">⌁</div>
+      <p class="empty-text">没有匹配 “<span id="emptyQuery"></span>”</p>
+      <p class="empty-hint">
+        按 <kbd>Enter</kbd> 用 <span id="emptyEngine">Google</span> 搜索
+      </p>
+    </div>
+
+    <!-- 底部 -->
+    <footer class="site-footer">
+      <span id="footerLeft">DECK</span>
+      <span class="footer-sep">·</span>
+      <span class="footer-count" id="footerCount"></span>
+      <span class="footer-sep">·</span>
+      <span>deployed on Vercel</span>
+      <span class="footer-spacer"></span>
+      <a href="#" id="footerGithub" target="_blank" rel="noopener">GitHub ↗</a>
+    </footer>
+  </div>
+
+  <script src="links.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

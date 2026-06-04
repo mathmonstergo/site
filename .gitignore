@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# 依赖 / 日志(本项目纯静态,一般用不到)
+node_modules/
+*.log
+
+# Vercel CLI 本地链接目录
+.vercel
