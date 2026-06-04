@@ -250,7 +250,7 @@ body {
   color: var(--accent);
 }
 
-.card-body { min-width: 0; flex: 1; }
+.card-body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .card-name {
   font-size: 13.5px; font-weight: 500; color: var(--text);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
