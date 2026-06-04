@@ -32,6 +32,8 @@
 
   --radius: 10px;
   --maxw: 1180px;
+
+  --bass: 0;  /* 0~1,音乐可视化每帧写入,驱动顶部辉光随低音呼吸 */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -79,6 +81,19 @@ body {
   background:
     radial-gradient(700px 360px at 50% -8%, var(--accent-soft), transparent 70%),
     radial-gradient(500px 300px at 100% 0%, rgba(255, 107, 74, 0.06), transparent 70%);
+}
+/* 播放时:低频(--bass,由 JS 每帧写入)驱动辉光呼吸 */
+html.viz-on .bg-glow {
+  opacity: calc(0.62 + var(--bass, 0) * 0.4);
+  transform: scale(calc(1 + var(--bass, 0) * 0.03));
+  transition: opacity 0.12s linear;
+  will-change: opacity, transform;
+}
+
+/* 频谱画布:垫在内容之下、背景纹理之上;轻微 drop-shadow 给柱子一点辉光,不刺眼 */
+.viz {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  filter: drop-shadow(0 0 4px rgba(61, 245, 180, 0.22));
 }
 
 /* CRT 扫描线 */
@@ -321,6 +336,106 @@ body {
 }
 
 /* ============================================================
+ *  背景音乐播放器(紧凑悬浮 · 可拖动)
+ * ============================================================ */
+.player {
+  position: fixed; right: 20px; bottom: 20px; z-index: 40;
+  display: flex; align-items: center;
+  padding: 8px 14px;
+  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 84%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px -18px #000;
+  cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.player:hover { border-color: var(--accent-line); }
+.player.dragging { cursor: grabbing; }
+
+/* 暂停时轻微呼吸光,提示「点我可播放」(拖动中不闪)*/
+.player[data-state="paused"]:not(.dragging) { animation: playerHint 2.6s ease-in-out infinite; }
+@keyframes playerHint {
+  0%, 100% { box-shadow: 0 10px 30px -18px #000, 0 0 0 0 rgba(61, 245, 180, 0); }
+  50%      { box-shadow: 0 10px 30px -18px #000, 0 0 0 4px rgba(61, 245, 180, 0.10); }
+}
+
+/* 均衡器律动条(兼播放状态指示)*/
+.eq { display: flex; align-items: flex-end; gap: 2.5px; height: 16px; margin-right: 11px; flex-shrink: 0; }
+.eq i {
+  width: 3px; height: 100%; border-radius: 2px;
+  background: var(--accent); transform-origin: bottom; transform: scaleY(0.3);
+}
+.player[data-state="playing"] .eq i { animation: eq 0.9s ease-in-out infinite; }
+.eq i:nth-child(1) { animation-delay: -0.2s; }
+.eq i:nth-child(2) { animation-delay: -0.5s; }
+.eq i:nth-child(3) { animation-delay: -0.1s; }
+.eq i:nth-child(4) { animation-delay: -0.7s; }
+@keyframes eq { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+.player[data-state="paused"] .eq i { background: var(--text-dim); transform: scaleY(0.3); }
+
+/* 歌名跑马灯:定宽窗口 + 两端淡出 + 无缝循环 */
+.player-marquee {
+  width: 132px; flex-shrink: 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+}
+.marquee-track {
+  display: inline-flex; white-space: nowrap; will-change: transform;
+  animation: marquee 13s linear infinite; /* 想反向(从右往左)加一行 animation-direction: reverse */
+}
+.marquee-item {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.4px;
+  color: var(--text-dim); padding-right: 34px;
+}
+.player[data-state="playing"] .marquee-item { color: var(--accent); }
+@keyframes marquee { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+/* 音量条:默认收起,悬停 >1s 或滚轮时平滑展开 */
+.player-vol {
+  -webkit-appearance: none; appearance: none;
+  width: 0; margin-left: 0; opacity: 0; pointer-events: none;
+  height: 3px; border-radius: 3px; background: var(--line-strong); cursor: pointer;
+  transition: width 0.34s cubic-bezier(0.2, 0.7, 0.2, 1),
+              margin-left 0.34s cubic-bezier(0.2, 0.7, 0.2, 1),
+              opacity 0.24s ease;
+}
+.player.vol-open .player-vol { width: 70px; margin-left: 11px; opacity: 1; pointer-events: auto; }
+.player-vol::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--accent); border: none; box-shadow: 0 0 8px var(--accent-glow);
+}
+.player-vol::-moz-range-thumb {
+  width: 11px; height: 11px; border: none; border-radius: 50%; background: var(--accent);
+}
+
+/* 样式切换器:嵌在播放器左侧,与音量条同样的展开规则(.vol-open 时一起滑出)*/
+.viz-switch {
+  display: flex; align-items: center; gap: 2px;
+  width: 0; margin-right: 0; opacity: 0; overflow: hidden; pointer-events: none;
+  transition: width 0.34s cubic-bezier(0.2, 0.7, 0.2, 1),
+              margin-right 0.34s cubic-bezier(0.2, 0.7, 0.2, 1),
+              opacity 0.24s ease;
+}
+.player.vol-open .viz-switch { width: 96px; margin-right: 5px; opacity: 1; pointer-events: auto; }
+.viz-btn {
+  flex: 0 0 auto;
+  display: grid; place-items: center; width: 22px; height: 22px; padding: 0;
+  border: none; border-radius: 50%; background: transparent;
+  color: var(--text-dim); cursor: pointer;
+  transition: color 0.16s, background 0.16s, box-shadow 0.16s;
+}
+.viz-btn svg { width: 14px; height: 14px; display: block; }
+.viz-btn:hover { color: var(--text); background: rgba(255, 255, 255, 0.06); }
+.viz-btn.active {
+  color: var(--accent); background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+.viz-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--accent-glow); }
+
+/* ============================================================
  *  响应式
  * ============================================================ */
 @media (max-width: 720px) {
@@ -330,4 +445,10 @@ body {
   .search-wrap { order: 3; flex-basis: 100%; }
   .status { order: 2; margin-left: auto; }
   .cat-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .player { right: 14px; bottom: 14px; padding: 7px 12px; }
+  .player-marquee { width: 108px; }
+  .player.vol-open .player-vol { width: 54px; }
+  .player.vol-open .viz-switch { width: 88px; }
+  .viz-btn { width: 20px; height: 20px; }
+  .viz-btn svg { width: 13px; height: 13px; }
 }

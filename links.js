@@ -7,9 +7,9 @@
 /* 站点信息 -------------------------------------------------- */
 const SITE = {
   brand: "DECK", //  左上角的站名(英文短词最好看,如 DECK / ORBIT / NEXUS)
-  owner: "Adam", //  你的名字 / handle
+  owner: "森森大魔王", //  你的名字 / handle
   tagline: "AI-native PM · 把想法做成产品", //  一句话标语
-  github: "https://github.com/", //  右下角 GitHub 链接(换成你的主页)
+  github: "https://github.com/mathmonstergo", //  右下角 GitHub 链接(换成你的主页)
 
   //  在搜索框输入关键词后,若导航里没有匹配项,回车会用下面的引擎去搜
   searchEngine: {
@@ -18,6 +18,24 @@ const SITE = {
     //  想用别的搜索引擎,把上面两行换掉即可,例如:
     //  name: "Bing",  url: "https://www.bing.com/search?q=",
     //  name: "百度",  url: "https://www.baidu.com/s?wd=",
+  },
+
+  //  背景音乐(右下角小播放器)————————————————————————————
+  //  浏览器规定:必须等你和页面第一次互动(点击 / 按键,滚动不算)才能出声,
+  //  所以是「一进来待命,你一点 / 一按音乐就循环响起」。src 设为 "" 可彻底关掉播放器。
+  //  播放时整页背景会随音乐频谱起伏(底部光柱 + 低音辉光);换成不支持跨域 CORS 的流会失效,SomaFM 各台和本地 mp3 都正常。
+  music: {
+    src: "https://ice1.somafm.com/defcon-128-mp3", //  默认:SomaFM「DEF CON Radio」公共电台,赛博/黑客味儿
+    title: "DEFCON·RADIO",                          //  没有「正在播放」信息时显示的名字
+    volume: 0.45,                                   //  默认音量 0~1
+    somaChannel: "defcon",                          //  显示该 SomaFM 频道的「正在播放」歌名;换台改这里;放自己的歌请删掉这行
+
+    //  ▸ 想放自己的歌:把一个 mp3 放进项目根目录的 music/ 文件夹,然后:
+    //      src: "music/你的歌.mp3",  title: "歌名",  并删掉上面的 somaChannel 行
+    //  ▸ 想换别的公共电台(都来自 SomaFM;箭头后是对应的 somaChannel 值):
+    //      Groove Salad(慵懒电子):  https://ice1.somafm.com/groovesalad-128-mp3  →  somaChannel: "groovesalad"
+    //      Synphaera(空灵合成器):    https://ice1.somafm.com/synphaera-128-mp3   →  somaChannel: "synphaera"
+    //      Lush(梦幻 vocal):         https://ice1.somafm.com/lush-128-mp3        →  somaChannel: "lush"
   },
 };
 
@@ -28,34 +46,41 @@ const SITE = {
  * ---------------------------------------------------------- */
 const CATEGORIES = [
   {
-    name: "AI 助手",
+    name: "AI御三家",
     items: [
       { name: "ChatGPT",    url: "https://chat.openai.com",      desc: "OpenAI 通用对话" },
       { name: "Claude",     url: "https://claude.ai",            desc: "长文本 / 编码最强" },
       { name: "Gemini",     url: "https://gemini.google.com",    desc: "Google 多模态" },
-      { name: "Perplexity", url: "https://www.perplexity.ai",    desc: "AI 搜索引擎" },
       { name: "DeepSeek",   url: "https://chat.deepseek.com",    desc: "国产开源强模型" },
-      { name: "Kimi",       url: "https://kimi.moonshot.cn",     desc: "超长上下文" },
+      { name: "Perplexity", url: "https://www.perplexity.ai",    desc: "AI 搜索引擎" },
     ],
   },
   {
-    name: "AI 开发 / 平台",
+    name: "个人常用",
     items: [
-      { name: "Anthropic Console", url: "https://console.anthropic.com", desc: "Claude API 后台" },
-      { name: "OpenAI Platform",   url: "https://platform.openai.com",   desc: "OpenAI API 后台" },
-      { name: "Hugging Face",      url: "https://huggingface.co",        desc: "模型 / 数据集社区" },
-      { name: "Replicate",         url: "https://replicate.com",         desc: "一键跑模型 API" },
-      { name: "Dify",              url: "https://dify.ai",               desc: "LLM 应用编排" },
-      { name: "Coze",              url: "https://www.coze.cn",           desc: "字节 Bot 搭建" },
+      { name: "GitHub", url: "https://github.com/mathmonstergo",  desc: "个人github" },
+      { name: "LinuxDo", url: "https://linux.do", desc: "学AI，上L站！" },
+      { name: "LDC商店", url: "https://ldc.iamsen.com", desc: "L站积分小店" },
+      { name: "日志",        url: "https://typecho.sensendemoou.cn", desc: "想起来就记一记" },
+      { name: "Cpa", url: "https://cpa.sensendemoou.cn", desc: "自用"},
+      { name: "Newapi", url: "https:/newapi.sensendemoou.cn", desc: "自用"},
+      { name: "3xui", url: "https://xui.sensendemoou.cn/xui", desc: "自用"},
+      { name: "Bitwarden", url: "https://pwd.iamsen.com", desc: "自用"},
+      { name: "Mail", url: "https://mail.iamsen.com", desc: "自用"}
     ],
   },
   {
-    name: "AI 编码",
+    name: "小游戏收藏",
     items: [
-      { name: "Cursor",       url: "https://cursor.com",       desc: "AI 代码编辑器" },
-      { name: "v0",           url: "https://v0.dev",           desc: "AI 生成前端 UI" },
-      { name: "GitHub Copilot", url: "https://github.com/features/copilot", desc: "代码补全" },
-      { name: "Claude Code",  url: "https://claude.com/claude-code", desc: "终端里的 AI 工程师" },
+      { name: "WorldGuess", url: "https://www.worldguessr.com/",  desc: "看图猜地点" },
+      { name: "Neal", url: "https://neal.fun", desc: "别人的小游戏合集" }
+    ],
+  },
+  {
+    name: "非常有用",
+    items: [
+      { name: "Any大善人", url: "https://anyrouter.top",  desc: "不多说" },
+      { name: "猫佬VPS", url: "https://meowvps.com", desc: "猫佬的vps引路站"}
     ],
   },
   {
@@ -69,15 +94,6 @@ const CATEGORIES = [
     ],
   },
   {
-    name: "开发 / 部署",
-    items: [
-      { name: "GitHub",     url: "https://github.com",          desc: "代码托管" },
-      { name: "Vercel",     url: "https://vercel.com",          desc: "前端一键部署" },
-      { name: "Cloudflare", url: "https://dash.cloudflare.com", desc: "域名 / CDN" },
-      { name: "StackBlitz", url: "https://stackblitz.com",      desc: "在线 IDE" },
-    ],
-  },
-  {
     name: "灵感 / 资讯",
     items: [
       { name: "Hacker News",     url: "https://news.ycombinator.com",     desc: "技术圈头条" },
@@ -86,15 +102,6 @@ const CATEGORIES = [
       { name: "Lenny's",         url: "https://www.lennysnewsletter.com", desc: "PM 必读 newsletter" },
       { name: "即刻",            url: "https://web.okjike.com",           desc: "国内科技社区" },
       { name: "少数派",          url: "https://sspai.com",                desc: "效率 / 工具" },
-    ],
-  },
-  {
-    name: "我的",
-    items: [
-      { name: "GitHub 主页", url: "https://github.com/",  desc: "← 换成你的" },
-      { name: "我的简历",    url: "#",                     desc: "← 放简历链接" },
-      { name: "客服 RAG 项目", url: "#",                  desc: "← 你的主推项目" },
-      { name: "邮箱",        url: "mailto:you@example.com", desc: "← 换成你的邮箱" },
     ],
   },
 ];
