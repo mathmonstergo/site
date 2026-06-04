@@ -221,7 +221,8 @@
     item2.setAttribute("aria-hidden", "true");
     track.append(item1, item2);
     marquee.appendChild(track);
-
+    // 可选：让文字反向(从右往左)
+    // track.style.animationDirection = "reverse";
     const vol = document.createElement("input");
     vol.className = "player-vol";
     vol.type = "range";

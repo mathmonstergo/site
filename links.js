@@ -61,9 +61,9 @@ const CATEGORIES = [
       { name: "GitHub", url: "https://github.com/mathmonstergo",  desc: "个人github" },
       { name: "LinuxDo", url: "https://linux.do", desc: "学AI，上L站！" },
       { name: "LDC商店", url: "https://ldc.iamsen.com", desc: "L站积分小店" },
-      { name: "日志",        url: "https://typecho.sensendemoou.cn", desc: "想起来就记一记" },
+      { name: "日志", url: "https://typecho.sensendemoou.cn", desc: "想起来就记一记" },
       { name: "Cpa", url: "https://cpa.sensendemoou.cn", desc: "自用"},
-      { name: "Newapi", url: "https:/newapi.sensendemoou.cn", desc: "自用"},
+      { name: "Newapi", url: "https://newapi.sensendemoou.cn", desc: "自用"},
       { name: "3xui", url: "https://xui.sensendemoou.cn/xui", desc: "自用"},
       { name: "Bitwarden", url: "https://pwd.iamsen.com", desc: "自用"},
       { name: "Mail", url: "https://mail.iamsen.com", desc: "自用"}
