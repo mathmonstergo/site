@@ -424,7 +424,7 @@
 
     const BARS = 64;                    // 频谱柱数(用对数映射铺满整条频段)
     const MINT = "rgba(61, 245, 180,";  // 拼透明度用,如 MINT + " 0.9)"
-    const G_LO = 0.7, G_HI = 3.2;       // 频段增益:低频 0.7×、高频 3.2×(抵消「低频永远最高」)
+    const G_LO = 1.0, G_HI = 3.2;       // 频段增益:低频 1.0×(已取消左侧压制,可满幅起伏)、高频 3.2×
     let ctx = null, analyser = null, freq = null, peaks = null, barv = null, gain = null, edges = null, raf = 0;
 
     // —— 当前样式:底部 / 中心圆波 / 左右两侧 / 关闭(记住上次选择)——
