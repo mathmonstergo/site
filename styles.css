@@ -361,19 +361,74 @@ html.viz-on .bg-glow {
   50%      { box-shadow: 0 10px 30px -18px #000, 0 0 0 4px rgba(61, 245, 180, 0.10); }
 }
 
-/* 均衡器律动条(兼播放状态指示)*/
-.eq { display: flex; align-items: flex-end; gap: 2.5px; height: 16px; margin-right: 11px; flex-shrink: 0; }
-.eq i {
-  width: 3px; height: 100%; border-radius: 2px;
-  background: var(--accent); transform-origin: bottom; transform: scaleY(0.3);
+/* 唱片机:替代均衡器 —— 旋转唱片 = 播放指示,唱臂悬停抬起 */
+.turntable { position: relative; width: 32px; height: 32px; margin-right: 11px; flex-shrink: 0; }
+
+/* 唱片:中心标签 + 同心纹路;播放时旋转,暂停时定格 */
+.disc {
+  position: absolute; inset: 0; border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, #06140e 0 2px, transparent 2.4px),                                  /* 主轴孔 */
+    radial-gradient(circle at 50% 50%, var(--accent) 2.4px 33%, transparent 33.5%),                         /* 标签 */
+    repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0 1px, rgba(0,0,0,0.55) 1px 2.4px), /* 纹路 */
+    #0b0d11;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 1px 5px rgba(0,0,0,0.5);
+  animation: spin 3.2s linear infinite;
+  animation-play-state: paused;        /* 默认停;播放时转 */
 }
-.player[data-state="playing"] .eq i { animation: eq 0.9s ease-in-out infinite; }
-.eq i:nth-child(1) { animation-delay: -0.2s; }
-.eq i:nth-child(2) { animation-delay: -0.5s; }
-.eq i:nth-child(3) { animation-delay: -0.1s; }
-.eq i:nth-child(4) { animation-delay: -0.7s; }
-@keyframes eq { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
-.player[data-state="paused"] .eq i { background: var(--text-dim); transform: scaleY(0.3); }
+/* 旋转高光:对称的唱片需要一道扫光,转起来才看得出来 */
+.disc::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(255,255,255,0.18), transparent 30%, transparent 70%, rgba(255,255,255,0.12));
+  mix-blend-mode: screen;
+}
+.player[data-state="playing"] .disc { animation-play-state: running; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 唱臂:右上角支点的「钝角 L」—— 主臂(.tonearm)从支点斜伸向盘面,
+   末端折段(.tonearm-head)以约 28° 钝角弯向盘心(开口朝唱片),折段末端是唱头。
+   主臂半径随角度呈 U 形:角度太大反而摆回中心标签,故用较小角度把唱头落到右下外环中段。
+   落针(--arm-down)= 唱头压在外环黑胶中段(避开中心标签);
+   抬起(--arm-up) = 主臂摆向右侧、唱头甩出盘缘(离盘归位)。 */
+.tonearm {
+  --arm-down: 1deg;
+  --arm-up: -16deg;
+  position: absolute; top: -3px; right: 0px;
+  width: 3px; height: 21px; border-radius: 3px;        /* 主臂 L1≈19(支点在 2px 处)*/
+  background: linear-gradient(180deg, var(--text-dim), var(--text));
+  transform-origin: 50% 2px;           /* 支点在顶端转轴处 */
+  transition: transform 0.5s cubic-bezier(0.34, 1.4, 0.5, 1);
+  z-index: 2;
+}
+.tonearm::before {  /* 转轴 */
+  content: ""; position: absolute; top: -3px; left: 50%; transform: translateX(-50%);
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--surface-2); box-shadow: inset 0 0 0 1.5px var(--text-dim);
+}
+/* headshell:主臂末端的钝角折段,固定弯向盘心(开口朝唱片);末端 ::after 是唱头 */
+.tonearm-head {
+  position: absolute; top: 100%; left: 50%; margin-left: -1.5px;
+  width: 3px; height: 9px; border-radius: 3px;         /* 折段 L2 */
+  background: linear-gradient(180deg, var(--text), var(--text-dim));
+  transform-origin: 50% 0;             /* 绕肘部(主臂末端)旋转 */
+  transform: rotate(28deg);            /* 钝角:内角≈152°,开口朝唱片 */
+}
+.tonearm-head::after {   /* 唱头 */
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translate(-50%, -3px);
+  width: 6px; height: 5px; border-radius: 1px; background: var(--accent);
+}
+
+/* 唱臂位置由「播放状态」驱动(手机无悬停也能凭它看出播放 / 暂停):
+   播放 → 落针在外环    暂停 → 抬起归位 */
+.player[data-state="playing"] .tonearm { transform: rotate(var(--arm-down)); }
+.player[data-state="paused"]  .tonearm { transform: rotate(var(--arm-up)); }
+
+/* 悬停反转 = 预览「点一下会发生的相反动作」。仅在真有指针悬停的设备(桌面鼠标)生效,
+   触摸屏不启用,避免「黏滞 hover」把唱臂卡在反转态。 */
+@media (hover: hover) {
+  .player[data-state="playing"]:hover .tonearm { transform: rotate(var(--arm-up)); }   /* 播放中悬停 → 抬起(预览暂停)*/
+  .player[data-state="paused"]:hover  .tonearm { transform: rotate(var(--arm-down)); } /* 暂停中悬停 → 落针(预览播放)*/
+}
 
 /* 歌名跑马灯:定宽窗口 + 两端淡出 + 无缝循环 */
 .player-marquee {

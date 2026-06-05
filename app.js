@@ -188,7 +188,7 @@
     setInterval(tick, 1000);
   }
 
-  /* —— 6. 背景音乐播放器(紧凑 / 可拖动 / 点击切换 / 悬停展开音量 / 滚轮调音量 / 歌名跑马灯)—— */
+  /* —— 6. 背景音乐播放器(唱片机:旋转唱片 + 悬停抬唱臂;可拖动 / 单击切换 / 双击或静止悬停展开 / 滚轮调音量 / 歌名跑马灯)—— */
   function initMusic() {
     const cfg = (typeof SITE !== "undefined" && SITE.music) || null;
     if (!cfg || !cfg.src) return; // 没配音乐就不渲染播放器
@@ -203,11 +203,19 @@
     player.dataset.state = "paused";
     player.tabIndex = 0;
     player.setAttribute("role", "button");
-    player.setAttribute("aria-label", "背景音乐:点击播放 / 暂停,滚轮调音量,可拖动");
+    player.setAttribute("aria-label", "背景音乐:单击播放 / 暂停,双击展开 / 收起设置,滚轮调音量,可拖动");
 
-    const eq = document.createElement("span");
-    eq.className = "eq";
-    eq.innerHTML = "<i></i><i></i><i></i><i></i>";
+    // 唱片机:旋转唱片(播放时转、暂停时定格)+ 唱臂(悬停抬起)
+    const turntable = document.createElement("span");
+    turntable.className = "turntable";
+    const disc = document.createElement("span");
+    disc.className = "disc";
+    const tonearm = document.createElement("span");
+    tonearm.className = "tonearm";
+    const tonearmHead = document.createElement("span"); // 末端折段(钝角 headshell),其末端是唱头
+    tonearmHead.className = "tonearm-head";
+    tonearm.append(tonearmHead);
+    turntable.append(disc, tonearm);
 
     // 歌名跑马灯:两份相同文字无缝循环
     const marquee = document.createElement("div");
@@ -235,7 +243,7 @@
     audio.crossOrigin = "anonymous"; // 允许 Web Audio 跨域分析频谱(SomaFM 流支持;本地 mp3 同源也 OK)
     audio.src = cfg.src;
 
-    player.append(eq, marquee, vol, audio);
+    player.append(turntable, marquee, vol, audio);
     document.body.appendChild(player);
 
     const setMarquee = (text) => { item1.textContent = text; item2.textContent = text; };
@@ -265,14 +273,17 @@
     // —— 交互状态:悬停展开 / 拖动 / 长按 ——
     const IDLE_MS = 900;  // 光标停在组件上「静止不操作」多久后,展开音量条
     const LONG_MS = 400;  // 按住超过这个时长算「长按」,不触发播放 / 暂停
+    const DBL_MS = 240;   // 两次点击在此窗口内算双击 → 展开 / 收起(并抑制这次播放切换)
     let dragging = false, moved = false, longPress = false;
-    let sx = 0, sy = 0, ox = 0, oy = 0, longTimer = 0, hoverTimer = 0;
+    let sx = 0, sy = 0, ox = 0, oy = 0, longTimer = 0, hoverTimer = 0, clickTimer = 0;
 
     const armHover = () => {  // 只要还在动就不断重置;停下不动满 IDLE_MS 才展开
       clearTimeout(hoverTimer);
       hoverTimer = window.setTimeout(() => player.classList.add("vol-open"), IDLE_MS);
     };
     const disarmHover = () => clearTimeout(hoverTimer);
+    const openPanel = () => { disarmHover(); player.classList.add("vol-open"); };      // 展开音量条 + 切换器
+    const togglePanel = () => { disarmHover(); player.classList.toggle("vol-open"); };  // 双击:开 / 关(手机靠它收起)
 
     const applyPos = (left, top) => {
       const w = player.offsetWidth, h = player.offsetHeight;
@@ -284,9 +295,11 @@
 
     // 悬停展开:仅在「未按下且指针静止」时;一移动就重置,一按下就取消
     player.addEventListener("pointerenter", armHover);
-    player.addEventListener("pointerleave", () => {
+    player.addEventListener("pointerleave", (e) => {
       disarmHover();
-      if (!volActive) player.classList.remove("vol-open");
+      // 触摸屏每次抬指都会误触发 pointerleave → 只让「鼠标移出」收起面板;
+      // 触摸端靠「再次双击」或「点别处」收起(见下)
+      if (e.pointerType === "mouse" && !volActive) player.classList.remove("vol-open");
     });
     player.addEventListener("wheel", (e) => {
       e.preventDefault();                 // 在组件上滚 = 调音量(滚轮是操作,不靠它做悬停展开)
@@ -326,11 +339,23 @@
         const r = player.getBoundingClientRect();
         localStorage.setItem(LS_POS, JSON.stringify({ left: r.left, top: r.top }));
       } else if (!longPress) {
-        toggle(); // 只有「短按 + 没移动」才切换播放 / 暂停
+        // 区分单击 / 双击:单击切换播放(延后 DBL_MS 确认),双击展开 / 收起面板并取消这次切换
+        if (clickTimer) {
+          clearTimeout(clickTimer); clickTimer = 0;
+          togglePanel();
+        } else {
+          clickTimer = window.setTimeout(() => { clickTimer = 0; toggle(); }, DBL_MS);
+        }
       }
       // 长按但没移动 → 视为一次握住 / 操作,什么都不做
     };
     player.addEventListener("pointerup", endPress);
+    // 点击播放器以外的任意位置 → 收起面板(手机没有 mouseleave,靠这条 + 双击来关)
+    document.addEventListener("pointerdown", (e) => {
+      if (player.classList.contains("vol-open") && !player.contains(e.target)) {
+        player.classList.remove("vol-open");
+      }
+    });
     player.addEventListener("keydown", (e) => {
       if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggle(); }
     });
