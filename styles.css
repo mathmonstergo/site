@@ -15,8 +15,12 @@
   --text-dim:       #a1a1aa;
   --text-faint:     #71717a;
 
-  /* —— 灵动点缀 (仅在状态心跳灯微量点缀) —— */
+  /* —— 音乐动态视觉与点缀色 —— */
+  --accent:         #3df5b4;
+  --accent-soft:    rgba(61, 245, 180, 0.14);
+  --accent-glow:    rgba(61, 245, 180, 0.45);
   --emerald:        #10b981;
+  --bass:           0; /* 0~1, Web Audio 每帧写入, 驱动顶部低音呼吸 */
 
   /* —— 字体系统 —— */
   --font-display:   "Chakra Petch", "JetBrains Mono", -apple-system, sans-serif;
@@ -61,6 +65,34 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+
+/* ============================================================
+ *  背景低音呼吸光晕与动态频谱 (随音乐节拍起伏)
+ * ============================================================ */
+.bg-glow {
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(750px 380px at 50% -10%, var(--accent-soft), transparent 70%),
+    radial-gradient(550px 320px at 100% 0%, rgba(255, 107, 74, 0.07), transparent 70%);
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+/* 播放时:低频(--bass 由 JS 实时分析写入)驱动光晕随低音呼吸与缩放 */
+html.viz-on .bg-glow {
+  opacity: calc(0.62 + var(--bass, 0) * 0.45);
+  transform: scale(calc(1 + var(--bass, 0) * 0.035));
+  transition: opacity 0.12s linear;
+  will-change: opacity, transform;
+}
+
+/* 动态频谱画布 (底部柱状 / 中心圆波 / 左右两侧波形) */
+.viz {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(61, 245, 180, 0.3));
+}
 
 /* ============================================================
  *  布局结构 (无多余线条，靠饱满留白与结构自然分割)
@@ -498,7 +530,7 @@ body {
 }
 
 /* ============================================================
- *  背景音乐播放器 (极简哑光黑胶 · 紧凑悬浮)
+ *  背景音乐播放器 (紧凑悬浮 · 完整动态黑胶与唱臂联动)
  * ============================================================ */
 .player {
   position: fixed;
@@ -532,26 +564,36 @@ body {
   cursor: grabbing;
 }
 
+/* 暂停时轻微呼吸光, 提示「点我可播放」 */
+.player[data-state="paused"]:not(.dragging) {
+  animation: playerHint 2.6s ease-in-out infinite;
+}
+@keyframes playerHint {
+  0%, 100% { box-shadow: 0 10px 30px -18px #000, 0 0 0 0 rgba(61, 245, 180, 0); }
+  50%      { box-shadow: 0 10px 30px -18px #000, 0 0 0 4px rgba(61, 245, 180, 0.15); }
+}
+
 /* 唱片机主体 */
 .turntable {
   position: relative;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   margin-right: 12px;
   flex-shrink: 0;
 }
 
-/* 哑光黑胶唱片 */
+/* 黑胶唱片 (中心薄荷翡翠标签 + 同心微纹理) */
 .disc {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 50% 50%, #000 0 2px, transparent 2.4px),
-    radial-gradient(circle at 50% 50%, #ffffff 2.4px 28%, transparent 28.5%),
-    repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0 1px, rgba(0,0,0,0.4) 1px 2px),
-    #111114;
-  animation: spin 3.6s linear infinite;
+    radial-gradient(circle at 50% 50%, #06140e 0 2px, transparent 2.4px),
+    radial-gradient(circle at 50% 50%, var(--accent) 2.4px 33%, transparent 33.5%),
+    repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0 1px, rgba(0,0,0,0.55) 1px 2.4px),
+    #0b0d11;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 1px 5px rgba(0,0,0,0.5);
+  animation: spin 3.2s linear infinite;
   animation-play-state: paused;
 }
 .disc::after {
@@ -559,7 +601,8 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, rgba(255,255,255,0.12), transparent 35%, transparent 65%, rgba(255,255,255,0.08));
+  background: conic-gradient(from 0deg, rgba(255,255,255,0.18), transparent 30%, transparent 70%, rgba(255,255,255,0.12));
+  mix-blend-mode: screen;
 }
 .player[data-state="playing"] .disc {
   animation-play-state: running;
@@ -568,33 +611,69 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* 唱臂 */
+/* 唱臂 (金属质感 + 悬停预览相反动作) */
 .tonearm {
+  --arm-down: 1deg;
+  --arm-up: -16deg;
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 2px;
-  height: 20px;
-  background: #a1a1aa;
-  transform-origin: top right;
-  transform: rotate(-36deg);
-  transition: transform 0.4s var(--ease-spring);
-  border-radius: 1px;
+  top: -3px;
+  right: 0px;
+  width: 3px;
+  height: 21px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--text-dim), #ffffff);
+  transform-origin: 50% 2px;
+  transition: transform 0.5s cubic-bezier(0.34, 1.4, 0.5, 1);
+  z-index: 2;
+}
+.tonearm::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #1a1c24;
+  box-shadow: inset 0 0 0 1.5px var(--text-dim);
 }
 .tonearm-head {
   position: absolute;
-  bottom: 0;
-  left: -2px;
-  width: 4px;
+  top: 100%;
+  left: 50%;
+  margin-left: -1.5px;
+  width: 3px;
+  height: 9px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #ffffff, var(--text-dim));
+  transform-origin: 50% 0;
+  transform: rotate(28deg);
+}
+.tonearm-head::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, -3px);
+  width: 6px;
   height: 5px;
-  background: #ffffff;
   border-radius: 1px;
+  background: var(--accent);
 }
 .player[data-state="playing"] .tonearm {
-  transform: rotate(-6deg);
+  transform: rotate(var(--arm-down));
+}
+.player[data-state="paused"]  .tonearm {
+  transform: rotate(var(--arm-up));
 }
 
-/* 跑马灯歌名 */
+@media (hover: hover) {
+  .player[data-state="playing"]:hover .tonearm { transform: rotate(var(--arm-up)); }
+  .player[data-state="paused"]:hover  .tonearm { transform: rotate(var(--arm-down)); }
+}
+
+/* 跑马灯歌名 (播放时点亮) */
 .player-marquee {
   width: 136px;
   overflow: hidden;
@@ -610,9 +689,13 @@ body {
 }
 .marquee-item {
   padding: 0 14px;
-  color: #ffffff;
+  color: var(--text-dim);
   font-size: 12px;
   font-weight: 500;
+  transition: color 0.2s;
+}
+.player[data-state="playing"] .marquee-item {
+  color: var(--accent);
 }
 @keyframes marquee {
   0% { transform: translateX(0); }
@@ -648,7 +731,8 @@ body {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
   border: none;
 }
 
@@ -697,8 +781,8 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 .viz-btn.active {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.2);
+  color: var(--accent);
+  background: var(--accent-soft);
 }
 
 /* 极简无侵入频谱画布 */
