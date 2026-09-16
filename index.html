@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Imansen-Deck</title>
-  <meta name="description" content="个人导航站 · AI 工具与常用链接" />
+  <title>DECK · 灵动交互实验舱</title>
+  <meta name="description" content="有趣、高互动、高对比度的现代个人导航站" />
 
-  <!-- 字体:Chakra Petch(标题) + JetBrains Mono(正文等宽) -->
+  <!-- 字体 -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- 背景低音律动光晕 (随音乐节拍呼吸) -->
+  <!-- 背景低音律动光晕 -->
   <div class="bg-glow" aria-hidden="true"></div>
 
   <div class="shell">
@@ -32,13 +32,41 @@
         </div>
       </div>
 
+      <!-- 趣味互动小挂件区 -->
+      <div class="fun-gadgets">
+        <!-- 桌面追眼小宠物 Sens-Bot (点击5次触发隐藏失重彩蛋) -->
+        <div class="bot-container">
+          <div class="bot-bubble" id="botBubble">点我可以解压哦 ٩(◕‿◕｡)۶</div>
+          <div class="sens-bot" id="sensBot" title="我是 Sens-Bot，连续点击我看看？">
+            <div class="bot-face">
+              <div class="eye eye-left"><div class="pupil pupil-left"></div></div>
+              <div class="eye eye-right"><div class="pupil pupil-right"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 物理音效静音切换 -->
+        <button class="mute-btn" id="muteToggle" type="button" title="点击开关物理微音效">
+          <svg class="icon-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg class="icon-sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 搜索框 -->
       <div class="search-wrap" id="searchWrap">
         <span class="search-prompt">&gt;</span>
         <input
           id="search"
           class="search-input"
           type="text"
-          placeholder="搜索链接,或回车直接搜索…"
+          placeholder="搜索链接, 或回车探索…"
           autocomplete="off"
           spellcheck="false"
           aria-label="搜索"
@@ -46,6 +74,7 @@
         <kbd class="search-key" id="searchKey">/</kbd>
       </div>
 
+      <!-- 状态与时钟 -->
       <div class="status">
         <span class="status-dot" aria-hidden="true"></span>
         <span class="status-label">ONLINE</span>
@@ -53,7 +82,7 @@
       </div>
     </header>
 
-    <!-- 链接网格(由 app.js 渲染) -->
+    <!-- 链接大卡片网格 -->
     <main id="grid" class="grid" aria-live="polite"></main>
 
     <!-- 搜索无结果 -->
@@ -71,13 +100,15 @@
       <span class="footer-sep">·</span>
       <span class="footer-count" id="footerCount"></span>
       <span class="footer-sep">·</span>
-      <span>deployed on Vercel</span>
+      <span>Sens-Engine v2.0</span>
       <span class="footer-spacer"></span>
       <a href="#" id="footerGithub" target="_blank" rel="noopener">GitHub ↗</a>
     </footer>
   </div>
 
   <script src="links.js"></script>
+  <script src="sound.js"></script>
+  <script src="interactive.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

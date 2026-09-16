@@ -1,36 +1,33 @@
 /* ============================================================
- *  DECK · 极简高对比度纯黑导航站 (Clean, High-Contrast & Bold)
- *  特点: 无生硬线条、清晰锐利的文字排印、放大饱满的大卡片、丝滑微动效
+ *  DECK FUN · 灵动互动实验舱风格
  * ============================================================ */
 
 :root {
-  /* —— 纯黑与实体石墨微板 (高对比度，清晰分明) —— */
   --bg:             #07080a;
-  --surface:        #121318;
-  --surface-hover:  #1a1c24;
-  --surface-active: #222530;
+  --surface:        #13141a;
+  --surface-hover:  #1b1d26;
+  --surface-active: #242733;
 
-  /* —— 文字层级 (告别模糊灰暗，纯白高亮，一眼看清) —— */
   --text-white:     #ffffff;
   --text-dim:       #a1a1aa;
   --text-faint:     #71717a;
 
-  /* —— 音乐动态视觉与点缀色 —— */
   --accent:         #3df5b4;
   --accent-soft:    rgba(61, 245, 180, 0.14);
   --accent-glow:    rgba(61, 245, 180, 0.45);
   --emerald:        #10b981;
-  --bass:           0; /* 0~1, Web Audio 每帧写入, 驱动顶部低音呼吸 */
+  --danger:         #ef4444;
+  --danger-glow:    rgba(239, 68, 68, 0.4);
+  --bass:           0;
 
-  /* —— 字体系统 —— */
   --font-display:   "Chakra Petch", "JetBrains Mono", -apple-system, sans-serif;
   --font-mono:      "JetBrains Mono", ui-monospace, monospace;
 
-  --radius-card:    16px;
+  --radius-card:    18px;
   --maxw:           1140px;
 
   --ease-spring:    cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-soft:      cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce:    cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 * {
@@ -53,21 +50,22 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  user-select: none;
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(61, 245, 180, 0.3);
   color: #ffffff;
 }
 
-/* —— 极简滚动条 —— */
+/* —— 滚动条 —— */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
 
 /* ============================================================
- *  背景低音呼吸光晕与动态频谱 (随音乐节拍起伏)
+ *  背景低音呼吸光晕与动态波形
  * ============================================================ */
 .bg-glow {
   position: fixed; inset: 0; z-index: -2; pointer-events: none;
@@ -77,15 +75,13 @@ body {
   opacity: 0.5;
   transition: opacity 0.3s ease;
 }
-/* 播放时:低频(--bass 由 JS 实时分析写入)驱动光晕随低音呼吸与缩放 */
 html.viz-on .bg-glow {
-  opacity: calc(0.62 + var(--bass, 0) * 0.45);
+  opacity: calc(0.6 + var(--bass, 0) * 0.45);
   transform: scale(calc(1 + var(--bass, 0) * 0.035));
   transition: opacity 0.12s linear;
   will-change: opacity, transform;
 }
 
-/* 动态频谱画布 (底部柱状 / 中心圆波 / 左右两侧波形) */
 .viz {
   position: fixed;
   inset: 0;
@@ -95,7 +91,7 @@ html.viz-on .bg-glow {
 }
 
 /* ============================================================
- *  布局结构 (无多余线条，靠饱满留白与结构自然分割)
+ *  布局外壳
  * ============================================================ */
 .shell {
   max-width: var(--maxw);
@@ -104,24 +100,24 @@ html.viz-on .bg-glow {
 }
 
 /* ============================================================
- *  顶栏 (纯白高光、清晰易读)
+ *  顶栏与互动挂件区
  * ============================================================ */
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 25;
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 20px;
   flex-wrap: wrap;
-  padding: 34px 0 26px;
+  padding: 30px 0 24px;
   margin-bottom: 36px;
   background: linear-gradient(to bottom, var(--bg) 75%, transparent);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
 
-/* 品牌标识 */
+/* 品牌 */
 .brand {
   display: flex;
   align-items: center;
@@ -137,7 +133,7 @@ html.viz-on .bg-glow {
 .brand-meta {
   display: flex;
   flex-direction: column;
-  margin-left: 16px;
+  margin-left: 14px;
   gap: 2px;
 }
 .brand-owner {
@@ -151,110 +147,191 @@ html.viz-on .bg-glow {
   color: var(--text-dim);
 }
 
-/* 搜索框 (放大胶囊、背景清晰可见、文字锐利) */
-.search-wrap {
-  flex: 1 1 300px;
+/* 趣味挂件区 */
+.fun-gadgets {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 18px;
+}
+
+/* 1. 桌面宠物 Sens-Bot */
+.bot-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.sens-bot {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #1c1f28;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s var(--ease-bounce), background 0.2s;
+}
+.sens-bot:hover {
+  transform: scale(1.12);
+  background: #252a36;
+}
+.sens-bot.squish {
+  animation: squish 0.3s ease;
+}
+@keyframes squish {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.25, 0.75); }
+  65% { transform: scale(0.85, 1.15); }
+  100% { transform: scale(1); }
+}
+
+.bot-face {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.eye {
+  width: 8px;
+  height: 10px;
+  background: #ffffff;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
+.pupil {
+  width: 4px;
+  height: 4px;
+  background: #000000;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 2px;
+  transition: transform 0.06s linear;
+}
+
+/* 宠物对话气泡 (向下展开，带有向上小指示箭头，绝对不被顶部截断) */
+.bot-bubble {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  background: rgba(22, 24, 32, 0.98);
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1.45;
+  padding: 8px 14px;
+  border-radius: 12px;
+  width: max-content;
+  max-width: 240px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.22s ease, transform 0.25s var(--ease-bounce);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+  z-index: 50;
+}
+.bot-bubble::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 5px 5px;
+  border-style: solid;
+  border-color: transparent transparent rgba(22, 24, 32, 0.98) transparent;
+}
+.bot-bubble.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 小宠物在失重状态下的彩蛋表现 */
+.sens-bot.zero-g {
+  box-shadow: 0 0 16px var(--accent-glow);
+  animation: botFloat 2.4s ease-in-out infinite;
+}
+@keyframes botFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(6deg); }
+}
+
+/* 3. 音效静音按钮 */
+.mute-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  border-radius: 50%;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s, transform 0.15s;
+}
+.mute-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(1.08);
+}
+.mute-btn svg {
+  width: 15px;
+  height: 15px;
+}
+.mute-btn .icon-sound-off { display: none; }
+.mute-btn.muted .icon-sound-on { display: none; }
+.mute-btn.muted .icon-sound-off { display: block; }
+
+/* 搜索框 */
+.search-wrap {
+  flex: 1 1 260px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
   background: #14151b;
   border: none;
   border-radius: 9999px;
   transition: background 0.24s var(--ease-spring), transform 0.2s var(--ease-spring);
 }
-.search-wrap:hover {
-  background: #191a22;
-}
+.search-wrap:hover { background: #191a22; }
 .search-wrap:focus-within {
-  background: #1f212b;
+  background: #20222d;
   transform: translateY(-1px);
 }
-.search-prompt {
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 700;
-}
+.search-prompt { color: #ffffff; font-size: 14px; font-weight: 700; }
 .search-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: #ffffff;
-  font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 500;
+  flex: 1; border: none; outline: none; background: transparent;
+  color: #ffffff; font-family: var(--font-mono); font-size: 13.5px; font-weight: 500;
 }
-.search-input::placeholder {
-  color: var(--text-faint);
-}
+.search-input::placeholder { color: var(--text-faint); }
 .search-key {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 6px;
-  padding: 2px 8px;
-  min-width: 22px;
-  text-align: center;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: #ffffff;
+  background: rgba(255, 255, 255, 0.1); border: none; border-radius: 6px;
+  padding: 2px 7px; min-width: 20px; text-align: center;
 }
 
-/* 状态栏 (双层声呐脉冲环) */
+/* 状态灯与时钟 */
 .status {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  color: var(--text-dim);
-  user-select: none;
+  display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-dim);
 }
 .status-dot {
-  position: relative;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--emerald);
-  display: inline-block;
-  margin-right: 2px;
-}
-.status-dot::before,
-.status-dot::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: var(--emerald);
-  pointer-events: none;
+  position: relative; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--emerald); display: inline-block;
 }
 .status-dot::before {
-  animation: sonar 3s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-}
-.status-dot::after {
-  animation: sonar 3s cubic-bezier(0, 0.2, 0.8, 1) infinite 1.5s;
+  content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--emerald);
+  animation: sonar 2.8s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 }
 @keyframes sonar {
   0% { transform: scale(1); opacity: 0.85; }
-  100% { transform: scale(3.4); opacity: 0; }
+  100% { transform: scale(3.5); opacity: 0; }
 }
-
-.status-label {
-  letter-spacing: 1.5px;
-  font-size: 11px;
-  color: var(--text-dim);
-  font-weight: 600;
-}
-.clock {
-  color: #ffffff;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.6px;
-  font-size: 13px;
-  font-weight: 600;
-}
+.status-label { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; }
+.clock { color: #ffffff; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
 /* ============================================================
- *  分类与卡片网格 (大尺寸、舒展饱满)
+ *  分类与大卡片网格
  * ============================================================ */
 .grid {
   display: flex;
@@ -262,43 +339,17 @@ html.viz-on .bg-glow {
   gap: 52px;
 }
 
-.cat {
-  opacity: 0;
-  animation: smoothReveal 0.6s var(--ease-spring) forwards;
-  animation-delay: calc(var(--i, 0) * 80ms);
-}
-
 .cat-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  user-select: none;
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
 }
-.cat-index {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-faint);
-}
-.cat-name {
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  color: #ffffff;
-}
+.cat-index { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--text-faint); }
+.cat-name { font-family: var(--font-display); font-size: 17px; font-weight: 700; letter-spacing: 1.2px; color: #ffffff; }
 .cat-count {
-  font-size: 11px;
-  font-weight: 600;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 99px;
-  padding: 2px 9px;
-  margin-left: 4px;
+  font-size: 11px; font-weight: 600; color: #ffffff; background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px; padding: 2px 9px;
 }
 
-/* 网格：最小 320px，卡片显著放大、宽阔大气 */
+/* 网格布局: 最小 320px，大卡片饱满舒展 */
 .cat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -306,45 +357,101 @@ html.viz-on .bg-glow {
 }
 
 /* ============================================================
- *  大卡片设计 (无硬边框 · 实体质感 · 高清易读)
+ *  大卡片 (3D 悬浮视差 + 漫反射微光)
  * ============================================================ */
 .card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --px: 50%;
+  --py: 50%;
+
   position: relative;
   display: flex;
   align-items: center;
   gap: 18px;
-  padding: 20px 22px;
+  padding: 22px 24px;
   background: var(--surface);
   border: none;
   border-radius: var(--radius-card);
   text-decoration: none;
   color: inherit;
   overflow: hidden;
-  opacity: 0;
-  animation: smoothReveal 0.55s var(--ease-spring) forwards;
-  animation-delay: calc(var(--i, 0) * 35ms);
+  cursor: grab;
+  touch-action: none;
+  transform: perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry));
   transition:
-    transform 0.24s var(--ease-spring),
-    background 0.24s var(--ease-soft),
-    box-shadow 0.24s var(--ease-soft);
-  cursor: pointer;
+    transform 0.18s ease-out,
+    background 0.22s var(--ease-soft),
+    box-shadow 0.22s var(--ease-soft);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* 悬停微浮与实体提亮 */
+/* 拖拽激活状态 */
+.card.is-dragging {
+  cursor: grabbing !important;
+  z-index: 100000 !important;
+  transition: none !important;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), 0 0 24px rgba(61, 245, 180, 0.25) !important;
+}
+
+/* 被拖出原位的失重状态 */
+.card.is-displaced {
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.85), 0 0 16px rgba(61, 245, 180, 0.12);
+  z-index: 20;
+}
+
+/* 被火柴人双手托举状态 */
+.card.is-carried {
+  z-index: 99997 !important;
+  transition: none !important;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
+}
+
+/* 归位瞬间高光 */
+.card.snap-highlight {
+  animation: snapFlash 0.5s ease-out;
+}
+@keyframes snapFlash {
+  0% { box-shadow: 0 0 0 2px var(--accent), 0 0 28px var(--accent-glow); }
+  100% { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); }
+}
+
+/* 原位虚影槽位 (原位占位防塌陷) */
+.slot-ghost {
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* 随动漫反射镜面高光 (Sheen) */
+.card-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    400px circle at var(--px) var(--py),
+    rgba(255, 255, 255, 0.08),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.card:hover .card-sheen {
+  opacity: 1;
+}
+
 .card:hover {
-  transform: translateY(-3px);
   background: var(--surface-hover);
-  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 18px 40px -10px rgba(0, 0, 0, 0.75);
 }
-
-/* 点击微触感反馈 */
 .card:active {
-  transform: translateY(-0.5px) scale(0.985);
+  transform: perspective(1000px) scale(0.975);
   background: var(--surface-active);
-  transition-duration: 0.08s;
 }
 
-/* 卡片图标容器 (46x46 饱满大图标 · 柔和底板) */
+/* 图标容器 (46x46 独立饱满底托) */
 .card-icon {
   width: 46px;
   height: 46px;
@@ -353,482 +460,141 @@ html.viz-on .bg-glow {
   place-items: center;
   background: rgba(255, 255, 255, 0.06);
   border: none;
-  border-radius: 12px;
+  border-radius: 13px;
   overflow: hidden;
-  transition: transform 0.26s var(--ease-spring), background 0.2s;
+  transition: transform 0.26s var(--ease-bounce), background 0.2s;
 }
 .card:hover .card-icon {
-  transform: scale(1.08);
+  transform: scale(1.12);
   background: rgba(255, 255, 255, 0.1);
 }
-
-/* 外部 Favicon 图片 */
-.card-icon img {
-  width: 24px;
-  height: 24px;
-  display: block;
-  border-radius: 4px;
-}
-
-/* 内置精美矢量 SVG 图标 */
+.card-icon img { width: 24px; height: 24px; display: block; border-radius: 4px; }
 .card-icon .icon-svg {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  color: #ffffff;
+  display: grid; place-items: center; width: 24px; height: 24px; color: #ffffff;
 }
-.card-icon .icon-svg svg {
-  width: 24px;
-  height: 24px;
-  display: block;
-}
+.card-icon .icon-svg svg { width: 24px; height: 24px; display: block; }
 
-/* 卡片文字 (字号提升，层级清晰分明) */
+/* 卡片文字 */
 .card-body {
-  min-width: 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 4px;
 }
 .card-name {
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  color: #ffffff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color 0.2s;
+  font-size: 16px; font-weight: 600; color: #ffffff; letter-spacing: 0.2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .card-desc {
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--text-dim);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 13px; font-weight: 400; color: var(--text-dim);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   transition: color 0.2s;
 }
-.card:hover .card-desc {
-  color: #d4d4d8;
-}
+.card:hover .card-desc { color: #d4d4d8; }
 
-/* 右侧箭头 (16px 大箭头，hover 从左下 45° 穿梭滑出) */
+/* 箭头 */
 .card-arrow {
-  font-size: 16px;
-  color: var(--text-dim);
-  opacity: 0;
+  font-size: 16px; color: var(--text-dim); opacity: 0;
   transform: translate(-5px, 5px);
-  transition:
-    opacity 0.22s var(--ease-soft),
-    transform 0.22s var(--ease-spring),
-    color 0.2s;
+  transition: opacity 0.22s var(--ease-soft), transform 0.22s var(--ease-spring), color 0.2s;
 }
 .card:hover .card-arrow {
-  opacity: 1;
-  transform: translate(0, 0);
-  color: #ffffff;
+  opacity: 1; transform: translate(0, 0); color: #ffffff;
 }
 
-/* 搜索隐藏 */
-.card.is-hidden,
-.cat.is-hidden {
-  display: none;
-}
+.card.is-hidden, .cat.is-hidden { display: none; }
 
 /* ============================================================
- *  搜索无结果
+ *  失重模式 (Zero-Gravity Mode · 深空漫漂)
  * ============================================================ */
-.empty {
-  text-align: center;
-  padding: 80px 20px;
-  color: var(--text-dim);
-  animation: smoothReveal 0.4s var(--ease-spring);
-}
-.empty-glyph {
-  font-size: 36px;
-  color: var(--text-faint);
-  margin-bottom: 14px;
-}
-.empty-text {
-  font-size: 15px;
-  color: #ffffff;
-  margin-bottom: 8px;
-}
-.empty-text span {
-  color: #ffffff;
-  font-weight: 700;
-}
-.empty-hint {
-  font-size: 13px;
-  color: var(--text-dim);
-}
-.empty-hint kbd {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 4px;
-  padding: 3px 8px;
-  color: #ffffff;
+body.zero-g-mode .card {
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.95), 0 0 24px rgba(61, 245, 180, 0.08);
+  pointer-events: none; /* 失重中避免误跳外部链接，专注于观赏太空漫漂与火柴人救援 */
 }
 
 /* ============================================================
- *  底部 (舒展留白与清晰文字)
+ *  底部
  * ============================================================ */
 .site-footer {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 80px;
-  padding-top: 36px;
-  font-size: 12.5px;
-  color: var(--text-dim);
-  user-select: none;
+  display: flex; align-items: center; gap: 14px; margin-top: 80px; padding-top: 36px;
+  font-size: 12.5px; color: var(--text-dim);
 }
-.footer-sep {
-  opacity: 0.4;
-}
-.footer-spacer {
-  flex: 1;
-}
-.site-footer a {
-  color: #ffffff;
-  text-decoration: none;
-  transition: color 0.2s, transform 0.2s var(--ease-spring);
-  display: inline-flex;
-  align-items: center;
-  font-weight: 500;
-}
-.site-footer a:hover {
-  opacity: 0.8;
-  transform: translateY(-1px);
-}
+.footer-sep { opacity: 0.4; }
+.footer-spacer { flex: 1; }
+.site-footer a { color: #ffffff; text-decoration: none; font-weight: 500; }
+.site-footer a:hover { opacity: 0.8; }
 
 /* ============================================================
- *  微动效与动画曲线
- * ============================================================ */
-@keyframes smoothReveal {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-  .cat, .card {
-    opacity: 1;
-  }
-}
-
-/* ============================================================
- *  背景音乐播放器 (紧凑悬浮 · 完整动态黑胶与唱臂联动)
+ *  黑胶唱片机
  * ============================================================ */
 .player {
-  position: fixed;
-  right: 28px;
-  bottom: 28px;
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  padding: 9px 16px;
-  background: rgba(20, 21, 26, 0.92);
-  border: none;
-  border-radius: 9999px;
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
-  cursor: grab;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: none;
-  transition:
-    background 0.22s var(--ease-soft),
-    transform 0.22s var(--ease-spring),
-    box-shadow 0.22s var(--ease-soft);
+  position: fixed; right: 28px; bottom: 28px; z-index: 40;
+  display: flex; align-items: center; padding: 9px 16px;
+  background: rgba(20, 21, 26, 0.92); border: none; border-radius: 9999px;
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6); cursor: grab;
+  transition: background 0.22s, transform 0.22s var(--ease-spring);
 }
 .player:hover {
-  background: rgba(30, 32, 40, 0.96);
-  transform: translateY(-2px);
-  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.7);
+  background: rgba(30, 32, 40, 0.96); transform: translateY(-2px);
 }
-.player.dragging {
-  cursor: grabbing;
-}
-
-/* 暂停时轻微呼吸光, 提示「点我可播放」 */
-.player[data-state="paused"]:not(.dragging) {
-  animation: playerHint 2.6s ease-in-out infinite;
-}
-@keyframes playerHint {
-  0%, 100% { box-shadow: 0 10px 30px -18px #000, 0 0 0 0 rgba(61, 245, 180, 0); }
-  50%      { box-shadow: 0 10px 30px -18px #000, 0 0 0 4px rgba(61, 245, 180, 0.15); }
-}
-
-/* 唱片机主体 */
-.turntable {
-  position: relative;
-  width: 32px;
-  height: 32px;
-  margin-right: 12px;
-  flex-shrink: 0;
-}
-
-/* 黑胶唱片 (中心薄荷翡翠标签 + 同心微纹理) */
+.turntable { position: relative; width: 32px; height: 32px; margin-right: 12px; flex-shrink: 0; }
 .disc {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
+  position: absolute; inset: 0; border-radius: 50%;
   background:
     radial-gradient(circle at 50% 50%, #06140e 0 2px, transparent 2.4px),
     radial-gradient(circle at 50% 50%, var(--accent) 2.4px 33%, transparent 33.5%),
     repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0 1px, rgba(0,0,0,0.55) 1px 2.4px),
     #0b0d11;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 1px 5px rgba(0,0,0,0.5);
-  animation: spin 3.2s linear infinite;
-  animation-play-state: paused;
+  animation: spin 3.2s linear infinite; animation-play-state: paused;
 }
-.disc::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, rgba(255,255,255,0.18), transparent 30%, transparent 70%, rgba(255,255,255,0.12));
-  mix-blend-mode: screen;
-}
-.player[data-state="playing"] .disc {
-  animation-play-state: running;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+.player[data-state="playing"] .disc { animation-play-state: running; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* 唱臂 (金属质感 + 悬停预览相反动作) */
 .tonearm {
-  --arm-down: 1deg;
-  --arm-up: -16deg;
-  position: absolute;
-  top: -3px;
-  right: 0px;
-  width: 3px;
-  height: 21px;
-  border-radius: 3px;
+  --arm-down: 1deg; --arm-up: -16deg;
+  position: absolute; top: -3px; right: 0px; width: 3px; height: 21px; border-radius: 3px;
   background: linear-gradient(180deg, var(--text-dim), #ffffff);
-  transform-origin: 50% 2px;
-  transition: transform 0.5s cubic-bezier(0.34, 1.4, 0.5, 1);
-  z-index: 2;
-}
-.tonearm::before {
-  content: "";
-  position: absolute;
-  top: -3px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #1a1c24;
-  box-shadow: inset 0 0 0 1.5px var(--text-dim);
+  transform-origin: 50% 2px; transition: transform 0.5s cubic-bezier(0.34, 1.4, 0.5, 1);
+  transform: rotate(var(--arm-up)); z-index: 2;
 }
 .tonearm-head {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -1.5px;
-  width: 3px;
-  height: 9px;
-  border-radius: 3px;
+  position: absolute; top: 100%; left: 50%; margin-left: -1.5px;
+  width: 3px; height: 9px; border-radius: 3px;
   background: linear-gradient(180deg, #ffffff, var(--text-dim));
-  transform-origin: 50% 0;
-  transform: rotate(28deg);
+  transform-origin: 50% 0; transform: rotate(28deg);
 }
 .tonearm-head::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translate(-50%, -3px);
-  width: 6px;
-  height: 5px;
-  border-radius: 1px;
-  background: var(--accent);
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translate(-50%, -3px);
+  width: 6px; height: 5px; border-radius: 1px; background: var(--accent);
 }
-.player[data-state="playing"] .tonearm {
-  transform: rotate(var(--arm-down));
-}
-.player[data-state="paused"]  .tonearm {
-  transform: rotate(var(--arm-up));
-}
+.player[data-state="playing"] .tonearm { transform: rotate(var(--arm-down)); }
 
-@media (hover: hover) {
-  .player[data-state="playing"]:hover .tonearm { transform: rotate(var(--arm-up)); }
-  .player[data-state="paused"]:hover  .tonearm { transform: rotate(var(--arm-down)); }
-}
-
-/* 跑马灯歌名 (播放时点亮) */
 .player-marquee {
-  width: 136px;
-  overflow: hidden;
-  font-size: 12px;
-  color: var(--text-dim);
+  width: 136px; overflow: hidden; font-size: 12px; color: var(--text-dim);
   mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
 }
-.marquee-track {
-  display: inline-flex;
-  white-space: nowrap;
-  animation: marquee 16s linear infinite;
-}
-.marquee-item {
-  padding: 0 14px;
-  color: var(--text-dim);
-  font-size: 12px;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-.player[data-state="playing"] .marquee-item {
-  color: var(--accent);
-}
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
+.marquee-track { display: inline-flex; white-space: nowrap; animation: marquee 16s linear infinite; }
+.marquee-item { padding: 0 14px; color: var(--text-dim); font-size: 12px; font-weight: 500; }
+.player[data-state="playing"] .marquee-item { color: var(--accent); }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-/* 音量条 */
 .player-vol {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 0;
-  margin-left: 0;
-  opacity: 0;
-  pointer-events: none;
-  height: 4px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  transition:
-    width 0.32s var(--ease-spring),
-    margin-left 0.32s var(--ease-spring),
-    opacity 0.2s ease;
-}
-.player.vol-open .player-vol {
-  width: 68px;
-  margin-left: 12px;
-  opacity: 1;
-  pointer-events: auto;
+  -webkit-appearance: none; appearance: none; width: 68px; height: 4px;
+  border-radius: 3px; background: rgba(255, 255, 255, 0.2); margin-left: 12px; cursor: pointer;
 }
 .player-vol::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent-glow);
-  border: none;
-}
-
-/* 频谱切换器 */
-.viz-switch {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  width: 0;
-  margin-right: 0;
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none;
-  transition:
-    width 0.32s var(--ease-spring),
-    margin-right 0.32s var(--ease-spring),
-    opacity 0.2s ease;
-}
-.player.vol-open .viz-switch {
-  width: 90px;
-  margin-right: 6px;
-  opacity: 1;
-  pointer-events: auto;
-}
-.viz-btn {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text-dim);
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-}
-.viz-btn svg {
-  width: 13px;
-  height: 13px;
-  display: block;
-}
-.viz-btn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
-}
-.viz-btn.active {
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-
-/* 极简无侵入频谱画布 */
-.viz {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.2;
+  -webkit-appearance: none; appearance: none; width: 11px; height: 11px;
+  border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent-glow);
 }
 
 /* ============================================================
- *  移动端响应式
+ *  响应式
  * ============================================================ */
-@media (max-width: 720px) {
-  .shell {
-    padding: 0 20px 90px;
-  }
-  .site-header {
-    gap: 18px;
-    padding: 22px 0 18px;
-  }
-  .brand-meta {
-    display: none;
-  }
-  .search-wrap {
-    order: 3;
-    flex-basis: 100%;
-  }
-  .status {
-    order: 2;
-    margin-left: auto;
-  }
-  .cat-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .card {
-    padding: 16px 18px;
-  }
-  .player {
-    right: 18px;
-    bottom: 18px;
-    padding: 8px 14px;
-  }
-  .player-marquee {
-    width: 110px;
-  }
+@media (max-width: 768px) {
+  .shell { padding: 0 20px 90px; }
+  .site-header { gap: 16px; padding: 20px 0 16px; }
+  .brand-meta { display: none; }
+  .fun-gadgets { order: 2; margin-left: auto; }
+  .search-wrap { order: 3; flex-basis: 100%; }
+  .status { display: none; }
+  .cat-grid { grid-template-columns: 1fr; }
 }
