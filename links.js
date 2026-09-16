@@ -58,50 +58,14 @@ const CATEGORIES = [
   {
     name: "个人常用",
     items: [
-      { name: "GitHub", url: "https://github.com/mathmonstergo",  desc: "个人github" },
-      { name: "LinuxDo", url: "https://linux.do", desc: "学AI，上L站！" },
-      { name: "LDC商店", url: "https://ldc.iamsen.com", desc: "L站积分小店" },
-      { name: "日志", url: "https://typecho.sensendemoou.cn", desc: "想起来就记一记" },
-      { name: "Cpa", url: "https://cpa.sensendemoou.cn", desc: "自用"},
-      { name: "Newapi", url: "https://newapi.sensendemoou.cn", desc: "自用"},
-      { name: "3xui", url: "https://xui.sensendemoou.cn/xui", desc: "自用"},
-      { name: "Bitwarden", url: "https://pwd.iamsen.com", desc: "自用"},
-      { name: "Mail", url: "https://mail.iamsen.com", desc: "自用"}
-    ],
-  },
-  {
-    name: "小游戏收藏",
-    items: [
-      { name: "WorldGuess", url: "https://www.worldguessr.com/",  desc: "看图猜地点" },
-      { name: "Neal", url: "https://neal.fun", desc: "别人的小游戏合集" }
-    ],
-  },
-  {
-    name: "非常有用",
-    items: [
-      { name: "Any大善人", url: "https://anyrouter.top",  desc: "不多说" },
-      { name: "猫佬VPS", url: "https://meowvps.com", desc: "猫佬的vps引路站"}
-    ],
-  },
-  {
-    name: "产品 / 设计",
-    items: [
-      { name: "Figma",      url: "https://figma.com",        desc: "设计协作" },
-      { name: "Notion",     url: "https://notion.so",        desc: "文档 / 知识库" },
-      { name: "Linear",     url: "https://linear.app",       desc: "现代项目管理" },
-      { name: "Excalidraw", url: "https://excalidraw.com",   desc: "手绘风白板" },
-      { name: "Miro",       url: "https://miro.com",         desc: "无限白板" },
-    ],
-  },
-  {
-    name: "灵感 / 资讯",
-    items: [
-      { name: "Hacker News",     url: "https://news.ycombinator.com",     desc: "技术圈头条" },
-      { name: "Product Hunt",    url: "https://producthunt.com",          desc: "新产品发现" },
-      { name: "arXiv",           url: "https://arxiv.org",                desc: "AI 论文" },
-      { name: "Lenny's",         url: "https://www.lennysnewsletter.com", desc: "PM 必读 newsletter" },
-      { name: "即刻",            url: "https://web.okjike.com",           desc: "国内科技社区" },
-      { name: "少数派",          url: "https://sspai.com",                desc: "效率 / 工具" },
+      { name: "GitHub",    url: "https://github.com/mathmonstergo",          desc: "个人github" },
+      { name: "LinuxDo",   url: "https://linux.do",                         desc: "学AI，上L站！" },
+      { name: "日志",      url: "https://typecho.sensendemoou.cn",           desc: "想起来就记一记" },
+      { name: "Monitor",   url: "https://vps.iamsen.com",                    desc: "服务器探针监控" },
+      { name: "3x-ui",     url: "https://xui.iamsen.com/1ZXmgVCXEFgHWlmCzZ", desc: "自用节点面板" },
+      { name: "PDF",       url: "https://pdf.iamsen.com",                    desc: "Stirling-PDF 工具箱" },
+      { name: "Bitwarden", url: "https://pwd.iamsen.com",                    desc: "自用" },
+      { name: "Mail",      url: "https://mail.iamsen.com",                   desc: "自用" },
     ],
   },
 ];
