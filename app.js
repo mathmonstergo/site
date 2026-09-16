@@ -103,7 +103,6 @@
       head.innerHTML =
         `<span class="cat-index">${String(idx + 1).padStart(2, "0")}</span>` +
         `<span class="cat-name">${cat.name}</span>` +
-        `<span class="cat-rule"></span>` +
         `<span class="cat-count">${cat.items.length}</span>`;
 
       const list = document.createElement("div");
@@ -423,7 +422,7 @@
     window.addEventListener("resize", resize);
 
     const BARS = 64;                    // 频谱柱数(用对数映射铺满整条频段)
-    const MINT = "rgba(61, 245, 180,";  // 拼透明度用,如 MINT + " 0.9)"
+    const MINT = "rgba(255, 255, 255,";  // 拼透明度用,如 MINT + " 0.9)"
     const G_LO = 1.0, G_HI = 3.2;       // 频段增益:低频 1.0×(已取消左侧压制,可满幅起伏)、高频 3.2×
     let ctx = null, analyser = null, freq = null, peaks = null, barv = null, gain = null, edges = null, raf = 0;
 
